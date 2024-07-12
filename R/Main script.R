@@ -256,16 +256,16 @@ countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points 
                                                                    Total.Points == -5 ~ "rgb(255, 255, 255,.3)",
                                                                    Total.Points == -0 ~ "rgb(194, 203, 49,.1)",
                                                                    Total.Points == 2 ~"rgb(244, 158, 74,.1)",
-                                                                   Total.Points == 4 ~ "rgb(128, 193, 185,.1)",
-                                                                   Total.Points == 5 ~ "rgb(76, 144, 215,.1)",
-                                                                   Total.Points == 6 ~ "rgb(243, 167, 167,.1)",
-                                                                   Total.Points == 7 ~ "rgb(233, 81, 82,.1)",
+                                                                   Total.Points == 4 ~ "rgb(194, 203, 49,.1)",
+                                                                   Total.Points == 5 ~ "rgb(194, 203, 49,.1)",
+                                                                   Total.Points == 6 ~ "rgb(244, 158, 74,.1)",
+                                                                   Total.Points == 7 ~ "rgb(244, 158, 74,.1)",
                                                                    Total.Points == 10 ~ "rgb(194, 203, 49)",
                                                                    Total.Points == 12 ~ "rgb(244, 158, 74)",
-                                                                   Total.Points == 14 ~ "rgb(128, 193, 185)",
-                                                                   Total.Points == 15 ~ "rgb(76, 144, 215)",
-                                                                   Total.Points == 16 ~ "rgb(243, 167, 167)",
-                                                                   Total.Points == 17 ~ "rgb(233, 81, 82)" ))
+                                                                   Total.Points == 14 ~ "rgb(194, 203, 49)",
+                                                                   Total.Points == 15 ~ "rgb(194, 203, 49)",
+                                                                   Total.Points == 16 ~ "rgb(244, 158, 74)",
+                                                                   Total.Points == 17 ~ "rgb(244, 158, 74)" ))
 
 
 ###Make the palette Color bins (not using)----
@@ -316,18 +316,19 @@ labels.countries <- sprintf(
 
 #Declare text for map legend ----
 legend.country.type <- c("NA / Annex 1 Country, Non UN Member (SIDS included)",
-                         "Other developing country No NAP",
-                         "Other developing country & LLDC No NAP",
-                         "Other developing country & SIDS No NAP",
-                         "LDC No NAP",
-                         "LDC & LLDC No NAP",
-                         "LDC & SIDS No NAP",
+                         "Developing country or LDC without NAP",
+                         # "Other developing country & LLDC No NAP",
+                         # "Other developing country & SIDS No NAP",
+                         # "LDC No NAP",
+                         # "LDC & LLDC No NAP",
+                         # "LDC & SIDS No NAP",
                          "Other developing country with NAP",
-                         "Other developing country & LLDC with a NAP",
-                         "Other developing country & SIDS with a NAP",
-                         "LDC with NAP",
-                         "LDC & LLDC with a NAP",
-                         "LDC & SIDS with a NAP")
+                         # "Other developing country & LLDC with a NAP",
+                         # "Other developing country & SIDS with a NAP",
+                         "LDC with NAP"
+                         # "LDC & LLDC with a NAP",
+                         # "LDC & SIDS with a NAP"
+                         )
 
 
 
@@ -352,17 +353,18 @@ NAPmap %>% addPolygons(fillColor = countries@data$color.code,
   addLegend(position = "bottomright",
             colors = c("rgb(255, 255, 255,.15)", 
                        "rgb(194, 203, 49,.15)", 
-                       "rgb(128, 193, 185,.15)", 
-                       "rgb(76, 144, 215,.15)",
-                       "rgb(244, 158, 74,.15)",
-                       "rgb(243, 167, 167,.15)", 
-                       "rgb(233, 81, 82,.15)", 
+                       # "rgb(128, 193, 185,.15)", 
+                       # "rgb(76, 144, 215,.15)",
+                       # "rgb(244, 158, 74,.15)",
+                       # "rgb(243, 167, 167,.15)", 
+                       # "rgb(233, 81, 82,.15)", 
                        "rgb(194, 203, 49)",
-                       "rgb(128, 193, 185)",
-                       "rgb(76, 144, 215)",
-                       "rgb(244, 158, 74)",
-                       "rgb(243, 167, 167)",
-                       "rgb(233, 81, 82)"),
+                       # "rgb(128, 193, 185)",
+                       # "rgb(76, 144, 215)",
+                       "rgb(244, 158, 74)"
+                       # "rgb(243, 167, 167)",
+                       # "rgb(233, 81, 82)"
+                       ),
             labels = legend.country.type,
             values = countries@data$NAPs.by.country.type,
             title = "NAPs by Country Type")
@@ -431,6 +433,8 @@ SN.language1 <-  sprintf('<a href="%s" target= "_blank">%s</a> and <a href="%s">
 NAPssubmitted <- NAPssubmitted %>% mutate(`NAP Language` = NAP.language1,
                                           `NAP Language 2` = NAP.language2) %>%
   select(1,2,3,4,5,6,11,9)
+
+
 
 
 

@@ -1,8 +1,18 @@
 ---
+Title: NAPs Map
+Author: NAP Central
+email: contact@napcentral.org
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{css echo=FALSE}
+.title, .author, .email {display: none;}
+.main-container {max-widht: 100%}
+
+```
+
+
+```{r setup, include=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 # This R script gives access to the main Google sheet

@@ -7,7 +7,7 @@ output: html_document
 
 ```{css echo=FALSE}
 .title, .author, .email {display: none;}
-.main-container {max-widht: 100%}
+.main-container {max-width: 100%}
 
 ```
 
@@ -294,7 +294,7 @@ countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points 
 
 
 ##Make the leaflet object, set the zoom level and view and Base Map ----
-NAPmap <- leaflet(countries) %>%
+NAPmap <- leaflet(countries, width = "100%") %>%
   setView(0, 1, 2.5) %>%
   addProviderTiles(providers$CartoDB.Positron)
 

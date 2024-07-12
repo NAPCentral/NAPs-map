@@ -1,5 +1,5 @@
 ---
-Title: NAPs Map
+title: NAPs Map
 Author: NAP Central
 email: contact@napcentral.org
 output: html_document
@@ -294,7 +294,7 @@ countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points 
 
 
 ##Make the leaflet object, set the zoom level and view and Base Map ----
-NAPmap <- leaflet(countries, width = "100%") %>%
+NAPmap <- leaflet(countries, width = "100%", height="700px") %>%
   setView(0, 1, 2.5) %>%
   addProviderTiles(providers$CartoDB.Positron)
 

@@ -252,7 +252,7 @@ countries@data$NAPs.by.country.type <- factor(countries@data$NAPs.by.country.typ
 
 
 ##Decide our own colors for the palette ----
-countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points == -17 ~ "rgb(255, 255, 255,.3)"
+countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points == -17 ~ "rgb(255, 255, 255,.3)",
                                                                   Total.Points == -7 ~ "#4c92d8",
                                                                    Total.Points == -10 ~ "rgb(255, 255, 255,.3)",
                                                                    Total.Points == -5 ~ "rgb(255, 255, 255,.3)",

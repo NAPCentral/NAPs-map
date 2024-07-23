@@ -8,6 +8,13 @@
 #
 
 library(shiny)
+library(geojsonio)
+library(leaflet)
+library(tidyverse)
+library(RColorBrewer)
+library(googlesheets4)
+library(httr)
+library(jsonlite)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -17,7 +24,7 @@ ui <- fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
-           leafletOutput("NAPmaplayer")
+           plotOutput("NAPmaplayer")
         )
     )
 
@@ -25,18 +32,9 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$NAPmaplayer <- renderLeaflet({
+    output$NAPmaplayer <- renderPlot({
       
-      # This R script gives access to the main Google sheet
-      
-      library(geojsonio)
-      library(leaflet)
-      library(tidyverse)
-      library(RColorBrewer)
-      library(googlesheets4)
-      library(httr)
-      library(jsonlite)
-      
+    
       ##GCFs Stuff ----
       
       #GET GCF's Project API
@@ -92,75 +90,7 @@ server <- function(input, output) {
       
       GCF.Singlecountry <- GCF.ProjectsbyCountry %>% filter(Multicountry == FALSE)
       
-      
-      #Get country total of GCF projects (not using) ----
-      # GCF.Singlecountrytotal <- GCF.Singlecountry %>% filter(Theme == "Adaptation") %>%
-      #   group_by(Countries.CountryName) %>%
-      #   summarise( TotalGCFFunding = sum(TotalGCFFunding), 
-      #              TotalCoFinancing = sum(TotalCoFinancing),
-      #              TotalValue = sum(TotalValue),
-      #              Countries.ISO3 = Countries.ISO3,
-      #              Countries.LDCs = Countries.LDCs, 
-      #              Countries.SIDS = Countries.SIDS )
-      
-      
-      
-      
-      #-----
-      ##Examples from previous code on choropleth from the US (can delete) ----
-      # states <- geojsonio::geojson_read("https://rstudio.github.io/leaflet/json/us-states.geojson", what = "sp")
-      # class(states)
-      # 
-      # 
-      # names(states)
-      # names(countries)
-      # 
-      # m <- leaflet(states) %>%
-      #   setView(-96, 37.8, 4) %>%
-      #   addTiles()
-      # 
-      # m %>% addPolygons()
-      # 
-      # 
-      # bins <- c(0, 10, 20, 50, 100, 200, 500, 1000, Inf)
-      # pal <- colorBin("YlOrRd", domain = states$density, bins = bins)
-      # 
-      # m %>% addPolygons(
-      #   fillColor = ~pal(density),
-      #   weight = 2,
-      #   opacity = 1,
-      #   color = "white",
-      #   dashArray = "3",
-      #   fillOpacity = 0.7)
-      # 
-      # labels <- sprintf(
-      #   "<strong>%s</strong><br/>%g people / mi<sup>2</sup>",
-      #   states$name, states$density
-      # ) %>% lapply(htmltools::HTML)
-      # 
-      # m <- m %>% addPolygons(
-      #   fillColor = ~pal(density),
-      #   weight = 2,
-      #   opacity = 1,
-      #   color = "white",
-      #   dashArray = "3",
-      #   fillOpacity = 0.7,
-      #   highlightOptions = highlightOptions(
-      #     weight = 5,
-      #     color = "#666",
-      #     dashArray = "",
-      #     fillOpacity = 0.7,
-      #     bringToFront = TRUE),
-      #   label = labels,
-      #   labelOptions = labelOptions(
-      #     style = list("font-weight" = "normal", padding = "3px 8px"),
-      #     textsize = "15px",
-      #     direction = "auto"))
-      # m
-      
-      #-----
-      
-      
+     
       ## Stuff with NAP Tracking sheet and World Map polygons
       
       ##Read the geojson world map file----
@@ -260,6 +190,7 @@ server <- function(input, output) {
       
       ##Changing the Numerical data in Total.Points columns to Characters----
       countries@data <- countries@data %>% mutate(NAPs.by.country.type = case_when(Total.Points == -17 ~ "NA / Annex 1 Country",
+                                                                                   Total.Points == -7 ~ "Annex 1 Country with NAP",
                                                                                    Total.Points == -10 ~ "NA / Non UN Member",  
                                                                                    Total.Points == -5 ~ "NA / Non UN Member & SIDS",
                                                                                    Total.Points == 0 ~ "Other developing country No NAP",
@@ -281,6 +212,7 @@ server <- function(input, output) {
       
       ##Decide our own colors for the palette ----
       countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points == -17 ~ "rgb(255, 255, 255,.3)",
+                                                                         Total.Points == -7 ~ "#4c92d8",
                                                                          Total.Points == -10 ~ "rgb(255, 255, 255,.3)",
                                                                          Total.Points == -5 ~ "rgb(255, 255, 255,.3)",
                                                                          Total.Points == -0 ~ "rgb(194, 203, 49,.1)",
@@ -345,7 +277,7 @@ server <- function(input, output) {
       
       #Declare text for map legend ----
       legend.country.type <- c("NA / Annex 1 Country, Non UN Member (SIDS included)",
-                               "Developing country or LDC without NAP",
+                               "Annex 1 country or developed country with NAP",
                                # "Other developing country & LLDC No NAP",
                                # "Other developing country & SIDS No NAP",
                                # "LDC No NAP",
@@ -381,7 +313,7 @@ server <- function(input, output) {
                                               direction = "auto"))  %>%
         addLegend(position = "bottomright",
                   colors = c("rgb(255, 255, 255,.15)", 
-                             "rgb(194, 203, 49,.15)", 
+                             "#4c92d8", 
                              # "rgb(128, 193, 185,.15)", 
                              # "rgb(76, 144, 215,.15)",
                              # "rgb(244, 158, 74,.15)",
@@ -398,6 +330,7 @@ server <- function(input, output) {
                   values = countries@data$NAPs.by.country.type,
                   title = "NAPs by Country Type")
       
+      NAPmaplayer
       
       ##Make R tibbles ----
       NAPssubmitted <- countries@data %>% select (ADMIN, Region, Type, LLDC.SIDS, NAP, Date.Posted, NAP.language.1, NAP.Link.1, NAP.language.2, NAP.Link.2) %>% 
@@ -463,7 +396,11 @@ server <- function(input, output) {
                                                 `NAP Language 2` = NAP.language2) %>%
         select(1,2,3,4,5,6,11,9)
       
-      #Save
+      #Save / End of R script
+      
+      
+      
+      
       
       
       

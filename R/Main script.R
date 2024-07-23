@@ -231,7 +231,7 @@ country.levels <- c("NA / Annex 1 Country",
 
 ##Changing the Numerical data in Total.Points columns to Characters----
 countries@data <- countries@data %>% mutate(NAPs.by.country.type = case_when(Total.Points == -17 ~ "NA / Annex 1 Country",
-                                                                             Total.Points == -7 ~ "Annex 1 Country with NAP"
+                                                                             Total.Points == -7 ~ "Annex 1 Country with NAP",
                                                                              Total.Points == -10 ~ "NA / Non UN Member",  
                                                                              Total.Points == -5 ~ "NA / Non UN Member & SIDS",
                                                                              Total.Points == 0 ~ "Other developing country No NAP",

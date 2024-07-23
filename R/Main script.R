@@ -188,12 +188,12 @@ countries@data$ADMIN <- recode(countries@data$ADMIN,
 countries@data <- left_join(countries@data, NAP_sheet, by = c("ADMIN" = "Country"))
 
 ##Recode NAs in type to fill all Non UN members
-countries@data$Type <- replace_na(countries@data$Type, "Non UN Member")
+countries@data$Type <- replace_na(countries@data$Type, "Non UN member")
 
 ##Modify the data into numerical format. 
 countries@data <- countries@data %>% mutate(Type.Points = case_when(Type == "LDC" ~ 2, 
                                                                     Type == "Other developing country" ~ 0,
-                                                                    Type == "Non UN Member" ~ -10,
+                                                                    Type == "Non UN member" ~ -10,
                                                                     Type == "Annex 1" ~ -17,
                                                                     is.na(Type) ~ -10),
                                             LLDC.SIDS.Points = case_when(LLDC.SIDS == "LLDC" ~ 4,
@@ -213,9 +213,9 @@ countries@data$Total.Points = rowSums(countries@data[,col_list])
 
 ##Change Total Points to descriptive factors I need 12 colors----
 ##Describing the levels in my factor
-country.levels <- c("NA / Annex 1 Country",
-                    "NA / Non UN Member",
-                    "NA / Non UN Member & SIDS",
+country.levels <- c("NA / Annex 1 country",
+                    "NA / Non UN member",
+                    "NA / Non UN member & SIDS",
                     "Other developing country No NAP",
                     "Other developing country & LLDC No NAP",
                     "Other developing country & SIDS No NAP",
@@ -231,10 +231,10 @@ country.levels <- c("NA / Annex 1 Country",
 
 
 ##Changing the Numerical data in Total.Points columns to Characters----
-countries@data <- countries@data %>% mutate(NAPs.by.country.type = case_when(Total.Points == -17 ~ "NA / Annex 1 Country",
-                                                                             Total.Points == -7 ~ "Annex 1 Country with NAP",
-                                                                             Total.Points == -10 ~ "NA / Non UN Member",  
-                                                                             Total.Points == -5 ~ "NA / Non UN Member & SIDS",
+countries@data <- countries@data %>% mutate(NAPs.by.country.type = case_when(Total.Points == -17 ~ "NA / Annex 1 country",
+                                                                             Total.Points == -7 ~ "Annex 1 country with NAP",
+                                                                             Total.Points == -10 ~ "NA / Non UN member",  
+                                                                             Total.Points == -5 ~ "NA / Non UN member & SIDS",
                                                                              Total.Points == 0 ~ "Other developing country No NAP",
                                                                              Total.Points == 2 ~"LDC No NAP",
                                                                              Total.Points == 4 ~ "Other developing country & LLDC No NAP",
@@ -312,10 +312,9 @@ labels.countries <- sprintf(
   countries@data$SectoralNAP2.Title.1 , countries@data$SectoralNAP2.Link.1, countries@data$SectoralNAP2.language.1
 ) %>% lapply(htmltools::HTML)
 
-
 #Declare text for map legend ----
-legend.country.type <- c("NA / Annex 1 Country, Non UN Member (SIDS included)",
-                         "Annex 1 country or developed country with NAP",
+legend.country.type <- c("NA / Annex 1, Non UN member (SIDS included)",
+                         "Annex 1 / developed country party with NAP",
                          # "Other developing country & LLDC No NAP",
                          # "Other developing country & SIDS No NAP",
                          # "LDC No NAP",

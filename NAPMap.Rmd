@@ -14,7 +14,6 @@ output: html_document
 
 ```{r setup, include=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
 # This R script gives access to the main Google sheet
 
 library(geojsonio)
@@ -24,7 +23,7 @@ library(RColorBrewer)
 library(googlesheets4)
 library(httr)
 library(jsonlite)
-library (knitr)
+library(leaflet.esri)
 
 ##GCFs Stuff ----
 
@@ -205,12 +204,12 @@ countries@data$ADMIN <- recode(countries@data$ADMIN,
 countries@data <- left_join(countries@data, NAP_sheet, by = c("ADMIN" = "Country"))
 
 ##Recode NAs in type to fill all Non UN members
-countries@data$Type <- replace_na(countries@data$Type, "Non UN Member")
+countries@data$Type <- replace_na(countries@data$Type, "Non UN member")
 
 ##Modify the data into numerical format. 
 countries@data <- countries@data %>% mutate(Type.Points = case_when(Type == "LDC" ~ 2, 
                                                                     Type == "Other developing country" ~ 0,
-                                                                    Type == "Non UN Member" ~ -10,
+                                                                    Type == "Non UN member" ~ -10,
                                                                     Type == "Annex 1" ~ -17,
                                                                     is.na(Type) ~ -10),
                                             LLDC.SIDS.Points = case_when(LLDC.SIDS == "LLDC" ~ 4,
@@ -230,9 +229,9 @@ countries@data$Total.Points = rowSums(countries@data[,col_list])
 
 ##Change Total Points to descriptive factors I need 12 colors----
 ##Describing the levels in my factor
-country.levels <- c("NA / Annex 1 Country",
-                    "NA / Non UN Member",
-                    "NA / Non UN Member & SIDS",
+country.levels <- c("NA / Annex 1 country",
+                    "NA / Non UN member",
+                    "NA / Non UN member & SIDS",
                     "Other developing country No NAP",
                     "Other developing country & LLDC No NAP",
                     "Other developing country & SIDS No NAP",
@@ -244,13 +243,15 @@ country.levels <- c("NA / Annex 1 Country",
                     "Other developing country & SIDS with a NAP",
                     "LDC with NAP",
                     "LDC & LLDC with a NAP",
-                    "LDC & SIDS with a NAP")
+                    "LDC & SIDS with a NAP"
+                    )
 
 
 ##Changing the Numerical data in Total.Points columns to Characters----
-countries@data <- countries@data %>% mutate(NAPs.by.country.type = case_when(Total.Points == -17 ~ "NA / Annex 1 Country",
-                                                                             Total.Points == -10 ~ "NA / Non UN Member",  
-                                                                             Total.Points == -5 ~ "NA / Non UN Member & SIDS",
+countries@data <- countries@data %>% mutate(NAPs.by.country.type = case_when(Total.Points == -17 ~ "NA / Annex 1 country",
+                                                                             Total.Points == -7 ~ "Annex 1 country with NAP",
+                                                                             Total.Points == -10 ~ "NA / Non UN member",  
+                                                                             Total.Points == -5 ~ "NA / Non UN member & SIDS",
                                                                              Total.Points == 0 ~ "Other developing country No NAP",
                                                                              Total.Points == 2 ~"LDC No NAP",
                                                                              Total.Points == 4 ~ "Other developing country & LLDC No NAP",
@@ -270,6 +271,7 @@ countries@data$NAPs.by.country.type <- factor(countries@data$NAPs.by.country.typ
 
 ##Decide our own colors for the palette ----
 countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points == -17 ~ "rgb(255, 255, 255,.3)",
+                                                                  Total.Points == -7 ~ "#4c92d8",
                                                                    Total.Points == -10 ~ "rgb(255, 255, 255,.3)",
                                                                    Total.Points == -5 ~ "rgb(255, 255, 255,.3)",
                                                                    Total.Points == -0 ~ "rgb(194, 203, 49,.1)",
@@ -293,10 +295,6 @@ countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points 
 
 
 
-##Make the leaflet object, set the zoom level and view and Base Map ----
-NAPmap <- leaflet(countries, width = "100%", height="700px") %>%
-  setView(0, 1, 2.5) %>%
-  addProviderTiles(providers$CartoDB.Positron)
 
 
 
@@ -331,10 +329,9 @@ labels.countries <- sprintf(
   countries@data$SectoralNAP2.Title.1 , countries@data$SectoralNAP2.Link.1, countries@data$SectoralNAP2.language.1
 ) %>% lapply(htmltools::HTML)
 
-
 #Declare text for map legend ----
-legend.country.type <- c("NA / Annex 1 Country, Non UN Member (SIDS included)",
-                         "Developing country or LDC without NAP",
+legend.country.type <- c("NA / Annex 1, Non UN member (SIDS included)",
+                         "Annex 1 / developed country party with NAP",
                          # "Other developing country & LLDC No NAP",
                          # "Other developing country & SIDS No NAP",
                          # "LDC No NAP",
@@ -346,15 +343,20 @@ legend.country.type <- c("NA / Annex 1 Country, Non UN Member (SIDS included)",
                          "LDC with NAP"
                          # "LDC & LLDC with a NAP",
                          # "LDC & SIDS with a NAP"
-                         )
+)
 
 
-```
+##Make the leaflet object, set the zoom level and view and Base Map ----
+NAPmap <- leaflet(countries, width = "100%", height="700px") %>%
+  setView(0, 1, 2.5) %>%
+  addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+  addEsriTiledMapLayer(
+    url = "https://geoservices.un.org/arcgis/rest/services/ClearMap_WebPlain/MapServer")
 
 
-```{r Map, echo=FALSE}
+
 ##Make the choropleth map ----
-NAPmap %>% addPolygons(fillColor = countries@data$color.code,
+NAPmaplayer <- NAPmap %>% addPolygons(fillColor = countries@data$color.code,
                        weight = 1.3,
                        opacity = 1,
                        color = "white",
@@ -373,7 +375,7 @@ NAPmap %>% addPolygons(fillColor = countries@data$color.code,
                          direction = "auto"))  %>%
   addLegend(position = "bottomright",
             colors = c("rgb(255, 255, 255,.15)", 
-                       "rgb(194, 203, 49,.15)", 
+                       "#4c92d8", 
                        # "rgb(128, 193, 185,.15)", 
                        # "rgb(76, 144, 215,.15)",
                        # "rgb(244, 158, 74,.15)",
@@ -389,7 +391,6 @@ NAPmap %>% addPolygons(fillColor = countries@data$color.code,
             labels = legend.country.type,
             values = countries@data$NAPs.by.country.type,
             title = "NAPs by Country Type")
-
 
 ##Make R tibbles ----
 NAPssubmitted <- countries@data %>% select (ADMIN, Region, Type, LLDC.SIDS, NAP, Date.Posted, NAP.language.1, NAP.Link.1, NAP.language.2, NAP.Link.2) %>% 
@@ -455,13 +456,18 @@ NAPssubmitted <- NAPssubmitted %>% mutate(`NAP Language` = NAP.language1,
                                           `NAP Language 2` = NAP.language2) %>%
   select(1,2,3,4,5,6,11,9)
 
-#Save
+#Save / End of R script
 
 
 
 
 
 
+
+```
+
+```{r echo=FALSE}
+NAPmaplayer
 ```
 
 

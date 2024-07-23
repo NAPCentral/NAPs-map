@@ -333,7 +333,7 @@ legend.country.type <- c("NA / Annex 1 Country, Non UN Member (SIDS included)",
 
 
 ##Make the choropleth map ----
-NAPmap %>% addPolygons(fillColor = countries@data$color.code,
+NAPmaplayer <- NAPmap %>% addPolygons(fillColor = countries@data$color.code,
                        weight = 1.3,
                        opacity = 1,
                        color = "white",
@@ -369,6 +369,7 @@ NAPmap %>% addPolygons(fillColor = countries@data$color.code,
             values = countries@data$NAPs.by.country.type,
             title = "NAPs by Country Type")
 
+NAPmaplayer
 
 ##Make R tibbles ----
 NAPssubmitted <- countries@data %>% select (ADMIN, Region, Type, LLDC.SIDS, NAP, Date.Posted, NAP.language.1, NAP.Link.1, NAP.language.2, NAP.Link.2) %>% 
@@ -435,6 +436,7 @@ NAPssubmitted <- NAPssubmitted %>% mutate(`NAP Language` = NAP.language1,
   select(1,2,3,4,5,6,11,9)
 
 #Save
+NAPssubmitted
 
 
 

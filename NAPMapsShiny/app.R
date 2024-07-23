@@ -15,6 +15,7 @@ library(RColorBrewer)
 library(googlesheets4)
 library(httr)
 library(jsonlite)
+library(leaflet.esri)
 
 
 #GET GCF's Project API
@@ -353,7 +354,9 @@ server <- function(input, output) {
     output$NAPmaplayer <- renderLeaflet({
        leaflet(countries) %>%
         setView(0, 1, 2.5) %>%
-        addProviderTiles(providers$Esri.WorldGrayCanvas) %>% 
+        addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+        addEsriTiledMapLayer(
+          url = "https://geoservices.un.org/arcgis/rest/services/ClearMap_WebPlain/MapServer") %>%
         addPolygons(fillColor = countries@data$color.code,
                                             weight = 1.3,
                                             opacity = 1,

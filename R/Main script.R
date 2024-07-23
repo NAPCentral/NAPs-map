@@ -433,26 +433,29 @@ NAP.language2 <- sprintf('<a href="%s" target= "_blank">%s</a>',
                          NAPssubmitted$`NAP Link 2`, NAPssubmitted$`NAP Language 2`)
 
 SN.1 <-  sprintf('<a href="%s" target= "_blank">%s</a> and <a href="%s" target= "_blank">%s</a>',
-                         SectoralNAPs$`1 Sectoral NAP Language 1`,
-                         SectoralNAPs$`1 Sectoral NAP Link 1`,
-                         SectoralNAPs$`1 Sectoral NAP Language 2`, 
-                         SectoralNAPs$`1 Sectoral NAP Link 2`)
+                 SectoralNAPs$`1 Sectoral NAP Link 1`,
+                 SectoralNAPs$`1 Sectoral NAP Language 1`,
+                 SectoralNAPs$`1 Sectoral NAP Link 2`,
+                 SectoralNAPs$`1 Sectoral NAP Language 2` 
+                         )
 SN.2 <-  sprintf('<a href="%s" target= "_blank">%s</a> and <a href="%s" target= "_blank">%s</a>',
-                         SectoralNAPs$`2 Sectoral NAP Language 1`,
-                         SectoralNAPs$`2 Sectoral NAP Link 1`,
-                         SectoralNAPs$`2 Sectoral NAP Language 2`, 
-                         SectoralNAPs$`2 Sectoral NAP Link 2`)
+                 SectoralNAPs$`2 Sectoral NAP Link 1`,
+                 SectoralNAPs$`2 Sectoral NAP Language 1`,
+                 SectoralNAPs$`2 Sectoral NAP Link 2`,
+                 SectoralNAPs$`2 Sectoral NAP Language 2`)
 SN.3 <-  sprintf('<a href="%s" target= "_blank">%s</a> and <a href="%s" target= "_blank">%s</a>',
-                 SectoralNAPs$`3 Sectoral NAP Language 1`,
                  SectoralNAPs$`3 Sectoral NAP Link 1`,
-                 SectoralNAPs$`3 Sectoral NAP Language 2`, 
-                 SectoralNAPs$`3 Sectoral NAP Link 2`)
+                 SectoralNAPs$`3 Sectoral NAP Language 1`,
+                 SectoralNAPs$`3 Sectoral NAP Link 2`,
+                 SectoralNAPs$`3 Sectoral NAP Language 2`)
 SN.4 <-  sprintf('<a href="%s" target= "_blank">%s</a>',
-                 SectoralNAPs$`4 Sectoral NAP Language 1`,
-                 SectoralNAPs$`4 Sectoral NAP Link 1`)
+                 SectoralNAPs$`4 Sectoral NAP Link 1`,
+                 SectoralNAPs$`4 Sectoral NAP Language 1`
+                 )
 SN.5 <-  sprintf('<a href="%s" target= "_blank">%s</a>',
-                 SectoralNAPs$`5 Sectoral NAP Language 1`,
-                 SectoralNAPs$`5 Sectoral NAP Link 1`)
+                 SectoralNAPs$`5 Sectoral NAP Link 1`,
+                 SectoralNAPs$`5 Sectoral NAP Language 1`
+                 )
 
 
 

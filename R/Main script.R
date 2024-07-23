@@ -231,6 +231,7 @@ country.levels <- c("NA / Annex 1 Country",
 
 ##Changing the Numerical data in Total.Points columns to Characters----
 countries@data <- countries@data %>% mutate(NAPs.by.country.type = case_when(Total.Points == -17 ~ "NA / Annex 1 Country",
+                                                                             Total.Points == -7 ~ "Annex 1 Country with NAP"
                                                                              Total.Points == -10 ~ "NA / Non UN Member",  
                                                                              Total.Points == -5 ~ "NA / Non UN Member & SIDS",
                                                                              Total.Points == 0 ~ "Other developing country No NAP",
@@ -251,7 +252,8 @@ countries@data$NAPs.by.country.type <- factor(countries@data$NAPs.by.country.typ
 
 
 ##Decide our own colors for the palette ----
-countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points == -17 ~ "rgb(255, 255, 255,.3)",
+countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points == -17 ~ "rgb(255, 255, 255,.3)"
+                                                                  Total.Points == -7 ~ "#4c92d8",
                                                                    Total.Points == -10 ~ "rgb(255, 255, 255,.3)",
                                                                    Total.Points == -5 ~ "rgb(255, 255, 255,.3)",
                                                                    Total.Points == -0 ~ "rgb(194, 203, 49,.1)",
@@ -316,7 +318,7 @@ labels.countries <- sprintf(
 
 #Declare text for map legend ----
 legend.country.type <- c("NA / Annex 1 Country, Non UN Member (SIDS included)",
-                         "Developing country or LDC without NAP",
+                         "Annex 1 country or developed country with NAP",
                          # "Other developing country & LLDC No NAP",
                          # "Other developing country & SIDS No NAP",
                          # "LDC No NAP",
@@ -352,7 +354,7 @@ NAPmaplayer <- NAPmap %>% addPolygons(fillColor = countries@data$color.code,
                          direction = "auto"))  %>%
   addLegend(position = "bottomright",
             colors = c("rgb(255, 255, 255,.15)", 
-                       "rgb(194, 203, 49,.15)", 
+                       "#4c92d8", 
                        # "rgb(128, 193, 185,.15)", 
                        # "rgb(76, 144, 215,.15)",
                        # "rgb(244, 158, 74,.15)",
@@ -435,8 +437,7 @@ NAPssubmitted <- NAPssubmitted %>% mutate(`NAP Language` = NAP.language1,
                                           `NAP Language 2` = NAP.language2) %>%
   select(1,2,3,4,5,6,11,9)
 
-#Save
-NAPssubmitted
+#Save / End of R script
 
 
 

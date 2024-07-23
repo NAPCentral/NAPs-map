@@ -7,6 +7,7 @@ library(RColorBrewer)
 library(googlesheets4)
 library(httr)
 library(jsonlite)
+library(leaflet.esri)
 
 ##GCFs Stuff ----
 
@@ -277,10 +278,6 @@ countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points 
 
 
 
-##Make the leaflet object, set the zoom level and view and Base Map ----
-NAPmap <- leaflet(countries) %>%
-  setView(0, 1, 2.5) %>%
-  addProviderTiles(providers$CartoDB.Positron)
 
 
 
@@ -331,6 +328,14 @@ legend.country.type <- c("NA / Annex 1 Country, Non UN Member (SIDS included)",
                          # "LDC & LLDC with a NAP",
                          # "LDC & SIDS with a NAP"
                          )
+
+
+##Make the leaflet object, set the zoom level and view and Base Map ----
+NAPmap <- leaflet(countries) %>%
+  setView(0, 1, 2.5) %>%
+  addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+  addEsriTiledMapLayer(
+    url = "https://geoservices.un.org/arcgis/rest/services/ClearMap_WebPlain/MapServer")
 
 
 

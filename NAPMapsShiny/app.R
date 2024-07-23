@@ -341,16 +341,10 @@ NAPssubmitted <- NAPssubmitted %>% mutate(`NAP Language` = NAP.language1,
 
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
-
-    # Application title
-    titlePanel("Map of NAPs as of"),
-
-        # Show a plot of the generated distribution
-        mainPanel(
+ui <- 
            leafletOutput("NAPmaplayer")
-        )
-    )
+    
+    
 
 
 # Define server logic required to draw a histogram
@@ -359,7 +353,7 @@ server <- function(input, output) {
     output$NAPmaplayer <- renderLeaflet({
        leaflet(countries) %>%
         setView(0, 1, 2.5) %>%
-        addProviderTiles(providers$CartoDB.Positron) %>% 
+        addProviderTiles(providers$Esri.WorldGrayCanvas) %>% 
         addPolygons(fillColor = countries@data$color.code,
                                             weight = 1.3,
                                             opacity = 1,

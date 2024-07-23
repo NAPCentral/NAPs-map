@@ -322,14 +322,47 @@ NAP.language1 <- sprintf('<a href="%s" target= "_blank">%s</a>',
 NAP.language2 <- sprintf('<a href="%s" target= "_blank">%s</a>',
                          NAPssubmitted$`NAP Link 2`, NAPssubmitted$`NAP Language 2`)
 
-SN.language1 <-  sprintf('<a href="%s" target= "_blank">%s</a> and <a href="%s">%s</a>',
-                         SectoralNAPs$`1 Sectoral NAP Language 1`, SectoralNAPs$`1 Sectoral NAP Link 1`, SectoralNAPs$`1 Sectoral NAP Language 2`, SectoralNAPs$`1 Sectoral NAP Link 2`)
+SN.1 <-  sprintf('<a href="%s" target= "_blank">%s</a> and <a href="%s" target= "_blank">%s</a>',
+                 SectoralNAPs$`1 Sectoral NAP Language 1`,
+                 SectoralNAPs$`1 Sectoral NAP Link 1`,
+                 SectoralNAPs$`1 Sectoral NAP Language 2`, 
+                 SectoralNAPs$`1 Sectoral NAP Link 2`)
+SN.2 <-  sprintf('<a href="%s" target= "_blank">%s</a> and <a href="%s" target= "_blank">%s</a>',
+                 SectoralNAPs$`2 Sectoral NAP Language 1`,
+                 SectoralNAPs$`2 Sectoral NAP Link 1`,
+                 SectoralNAPs$`2 Sectoral NAP Language 2`, 
+                 SectoralNAPs$`2 Sectoral NAP Link 2`)
+SN.3 <-  sprintf('<a href="%s" target= "_blank">%s</a> and <a href="%s" target= "_blank">%s</a>',
+                 SectoralNAPs$`3 Sectoral NAP Language 1`,
+                 SectoralNAPs$`3 Sectoral NAP Link 1`,
+                 SectoralNAPs$`3 Sectoral NAP Language 2`, 
+                 SectoralNAPs$`3 Sectoral NAP Link 2`)
+SN.4 <-  sprintf('<a href="%s" target= "_blank">%s</a>',
+                 SectoralNAPs$`4 Sectoral NAP Language 1`,
+                 SectoralNAPs$`4 Sectoral NAP Link 1`)
+SN.5 <-  sprintf('<a href="%s" target= "_blank">%s</a>',
+                 SectoralNAPs$`5 Sectoral NAP Language 1`,
+                 SectoralNAPs$`5 Sectoral NAP Link 1`)
+
 
 
 ##Add Link to table ----
 NAPssubmitted <- NAPssubmitted %>% mutate(`NAP Language` = NAP.language1,
                                           `NAP Language 2` = NAP.language2) %>%
   select(1,2,3,4,5,6,11,9)
+
+SectoralNAPs <- SectoralNAPs %>% mutate(`Sectoral NAP 1` = SN.1,
+                                        `Sectoral NAP 2` = SN.2,
+                                        `Sectoral NAP 3` = SN.3,
+                                        `Sectoral NAP 4` = SN.4,
+                                        `Sectoral NAP 5` = SN.5) %>%
+  select(Country, Region, Type, `LLDC or SIDS`, `Date Posted`,
+         6 ,`Sectoral NAP 1`,
+         11 ,`Sectoral NAP 2`,
+         16 ,`Sectoral NAP 3`,
+         21 ,`Sectoral NAP 4`,
+         24 ,`Sectoral NAP 5`
+  )
 
 #Save / End of R script
 
@@ -346,8 +379,11 @@ NAPssubmitted <- NAPssubmitted %>% mutate(`NAP Language` = NAP.language1,
 ui <- fluidPage(
                 leafletOutput("NAPmaplayer"),
                 hr(),
-                dataTableOutput('NAPtibble')
-  
+                navbarPage(
+                  title = 'National Adaptation Plans',
+                  tabPanel('Submitted NAPs',     DT::dataTableOutput('NAPtibble')),
+                  tabPanel('Sectoral NAPs',     DT::dataTableOutput('Sectoraltibble'))
+                )
 )
 
 
@@ -400,6 +436,10 @@ server <- function(input, output) {
     
     output$NAPtibble <- renderDataTable(
       datatable(NAPssubmitted, options = list(paging = FALSE), escape=FALSE)
+    )
+    
+    output$Sectoraltibble <- renderDataTable(
+      datatable(SectoralNAPs, options = list(paging = FALSE), escape=FALSE)
     )
 }
 

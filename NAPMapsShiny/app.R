@@ -16,6 +16,7 @@ library(googlesheets4)
 library(httr)
 library(jsonlite)
 library(leaflet.esri)
+library(DT)
 
 
 #GET GCF's Project API
@@ -342,10 +343,12 @@ NAPssubmitted <- NAPssubmitted %>% mutate(`NAP Language` = NAP.language1,
 
 
 # Define UI for application that draws a histogram
-ui <- 
-           leafletOutput("NAPmaplayer")
-    
-    
+ui <- fluidPage(
+                leafletOutput("NAPmaplayer"),
+                hr(),
+                dataTableOutput('NAPtibble')
+  
+)
 
 
 # Define server logic required to draw a histogram
@@ -393,17 +396,11 @@ server <- function(input, output) {
                   values = countries@data$NAPs.by.country.type,
                   title = "NAPs by Country Type")
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
     })
+    
+    output$NAPtibble <- renderDataTable(
+      datatable(NAPssubmitted, options = list(paging = FALSE), escape=FALSE)
+    )
 }
 
 # Run the application 

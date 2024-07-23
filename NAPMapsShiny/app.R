@@ -18,6 +18,16 @@ library(jsonlite)
 library(leaflet.esri)
 library(DT)
 
+##Using oauth to solve the app not deploying via shiny - For reference see: https://www.jdtrat.com/blog/connect-shiny-google/
+options(
+  # whenever there is one account token found, use the cached token
+  gargle_oauth_email = TRUE,
+  # specify auth tokens should be stored in a hidden directory ".secrets"
+  gargle_oauth_cache = "NAPMapsShiny/.secrets"
+)
+
+gs4_auth(cache = ".secrets", email = "napcentral2014@gmail.com")
+
 
 #GET GCF's Project API
 
@@ -79,8 +89,10 @@ GCF.Singlecountry <- GCF.ProjectsbyCountry %>% filter(Multicountry == FALSE)
 ##Read the geojson world map file----
 countries <- geojsonio::geojson_read("https://r2.datahub.io/clvyjaryy0000la0cxieg4o8o/master/raw/data/countries.geojson", what = "sp")
 
+
 ##Read excel file from online, with column headers and declaring NAs
 NAP_sheet <- read_sheet('1D5qRsCMfNKkORZuz3qov0HGs4t1LiulrO116pPyhywk', sheet = 1, col_names = TRUE, na = c("","NA"))
+
 
 ##Transform dates into date format
 NAP_sheet$Date.Posted <- NAP_sheet$Date.Posted %>% as.Date(format = "%Y-%m-%d")

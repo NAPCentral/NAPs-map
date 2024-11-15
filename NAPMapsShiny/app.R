@@ -270,7 +270,7 @@ legend.country.type <- c("NA / Annex 1, Non UN member (SIDS included)",
                          # "LDC No NAP",
                          # "LDC & LLDC No NAP",
                          # "LDC & SIDS No NAP",
-                         "Other developing country with NAP",
+                         "Other developing country party with NAP",
                          # "Other developing country & LLDC with a NAP",
                          # "Other developing country & SIDS with a NAP",
                          "LDC with NAP"
@@ -398,12 +398,12 @@ SectoralNAPs <- SectoralNAPs %>% mutate(`Sectoral NAP 1` = SN.1,
 # Define UI for application that draws a histogram
 ui <- fluidPage(
                 leafletOutput("NAPmaplayer"),
-                hr(),
-                navbarPage(
-                  title = 'National Adaptation Plans',
-                  tabPanel('Submitted NAPs',     DT::dataTableOutput('NAPtibble')),
-                  tabPanel('Sectoral NAPs',     DT::dataTableOutput('Sectoraltibble'))
-                )
+                # hr(),
+                # navbarPage(
+                #   title = 'National Adaptation Plans',
+                #   tabPanel('Submitted NAPs',     DT::dataTableOutput('NAPtibble')),
+                #   tabPanel('Sectoral NAPs',     DT::dataTableOutput('Sectoraltibble'))
+                # )
 )
 
 

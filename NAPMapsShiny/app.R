@@ -144,24 +144,24 @@ countries@data <- left_join(countries@data, NAP_sheet, by = c("ADMIN" = "Country
 countries@data$Type <- replace_na(countries@data$Type, "Non UN Member")
 
 ##Modify the data into numerical format. 
-countries@data <- countries@data %>% mutate(Type.Points = case_when(Type == "LDC" ~ 2, 
-                                                                    Type == "Other developing country" ~ 0,
-                                                                    Type == "Non UN Member" ~ -10,
-                                                                    Type == "Annex 1" ~ -17,
-                                                                    is.na(Type) ~ -10),
-                                            LLDC.SIDS.Points = case_when(LLDC.SIDS == "LLDC" ~ 4,
-                                                                         LLDC.SIDS == "SIDS" ~ 5,
-                                                                         is.na(LLDC.SIDS) ~ 0),
-                                            NAP.Points = case_when(NAP == "Yes" ~ 10,
-                                                                   NAP == "No" ~ 0,
-                                                                   is.na(NAP) ~ 0))
+countries@data <- countries@data %>% mutate(Type.Points = case_when(Type == "LDC" ~ 2,
+                        Type == "Other developing country" ~ 0,
+                        Type == "Non UN Member" ~ -10,
+                        Type == "Annex 1" ~ -17,
+                        is.na(Type) ~ -10),
+LLDC.SIDS.Points = case_when(LLDC.SIDS == "LLDC" ~ 4,
+                             LLDC.SIDS == "SIDS" ~ 5,
+                             is.na(LLDC.SIDS) ~ 0),
+NAP.Points = case_when(NAP == "Yes" ~ 10,
+                       NAP == "No" ~ 0,
+                       is.na(NAP) ~ 0))
 
 
 ##Create the col list of the columns to be added for total points
 col_list = c("Type.Points", "LLDC.SIDS.Points", "NAP.Points")
 
 ##Calculate the total
-countries@data$Total.Points = rowSums(countries@data[,col_list]) 
+countries@data$Total.Points = rowSums(countries@data[,col_list])
 
 
 ##Change Total Points to descriptive factors I need 12 colors----
@@ -207,7 +207,7 @@ countries@data$NAPs.by.country.type <- factor(countries@data$NAPs.by.country.typ
 
 ##Decide our own colors for the palette ----
 countries@data <- countries@data %>% mutate(color.code = case_when(Total.Points == -17 ~ "rgb(255, 255, 255,.3)",
-                                                                   Total.Points == -7 ~ "#4c92d8",
+                                                                   Total.Points == -7 ~ "rgb(255, 255, 255,.3)",
                                                                    Total.Points == -10 ~ "rgb(255, 255, 255,.3)",
                                                                    Total.Points == -5 ~ "rgb(255, 255, 255,.3)",
                                                                    Total.Points == -0 ~ "rgb(194, 203, 49,.1)",
@@ -263,8 +263,8 @@ labels.countries <- sprintf(
 
 
 #Declare text for map legend ----
-legend.country.type <- c("NA / Annex 1, Non UN member (SIDS included)",
-                         "Annex 1 / developed country party with NAP",
+legend.country.type <- c(#"NA / Annex 1, Non UN member (SIDS included)",
+                         #"Annex 1 / developed country party with NAP",
                          # "Other developing country & LLDC No NAP",
                          # "Other developing country & SIDS No NAP",
                          # "LDC No NAP",
@@ -384,6 +384,14 @@ SectoralNAPs <- SectoralNAPs %>% mutate(`Sectoral NAP 1` = SN.1,
          `Sectoral NAP 5`
   )
 
+## Create a filter in countries database for developing countries and LDCs only
+developingcountries <- countries
+
+developingcountries@data <- developingcountries@data  %>%  
+  filter(Type == "LDC" | Type == "Other developing country")
+
+
+
 #Save / End of R script
 
 
@@ -410,48 +418,83 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$NAPmaplayer <- renderLeaflet({
-       leaflet(countries) %>%
-        setView(0, 1, 2.5) %>%
-        addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
-        addEsriTiledMapLayer(
-          url = "https://geoservices.un.org/arcgis/rest/services/ClearMap_WebPlain/MapServer") %>%
-        addPolygons(fillColor = countries@data$color.code,
-                                            weight = 1.3,
-                                            opacity = 1,
-                                            color = "white",
-                                            dashArray = "3",
-                                            fillOpacity = 0.8,
-                                            highlightOptions = highlightOptions(
-                                              weight = 3,
-                                              color = "white",
-                                              dashArray = "",
-                                              fillOpacity = 1,
-                                              bringToFront = TRUE),
-                                            popup = labels.countries,
-                                            popupOptions = popupOptions(
-                                              style = list("font-weight" = "normal", padding = "3px 8px", "text-size" = "15px"),
-                                              textsize = "15px",
-                                              direction = "auto"))  %>%
-        addLegend(position = "bottomright",
-                  colors = c("rgb(255, 255, 255,.15)", 
-                             "#4c92d8", 
-                             # "rgb(128, 193, 185,.15)", 
-                             # "rgb(76, 144, 215,.15)",
-                             # "rgb(244, 158, 74,.15)",
-                             # "rgb(243, 167, 167,.15)", 
-                             # "rgb(233, 81, 82,.15)", 
-                             "rgb(194, 203, 49)",
-                             # "rgb(128, 193, 185)",
-                             # "rgb(76, 144, 215)",
-                             "rgb(244, 158, 74)"
-                             # "rgb(243, 167, 167)",
-                             # "rgb(233, 81, 82)"
-                  ),
-                  labels = legend.country.type,
-                  values = countries@data$NAPs.by.country.type,
-                  title = "NAPs by Country Type")
-      
+    # output$NAPmaplayer <- renderLeaflet({
+    #    leaflet(developingcountries) %>%
+    #     setView(0, 1, 2.5) %>%
+    #     addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+    #     addEsriTiledMapLayer(
+    #       url = "https://geoservices.un.org/arcgis/rest/services/ClearMap_WebPlain/MapServer") %>%
+    #     addPolygons(fillColor = developingcountries@data$color.code,
+    #                                         weight = 1.3,
+    #                                         opacity = 1,
+    #                                         color = "white",
+    #                                         dashArray = "3",
+    #                                         fillOpacity = 0.8,
+    #                                         highlightOptions = highlightOptions(
+    #                                           weight = 3,
+    #                                           color = "white",
+    #                                           dashArray = "",
+    #                                           fillOpacity = 1,
+    #                                           bringToFront = TRUE),
+    #                                         popup = labels.countries,
+    #                                         popupOptions = popupOptions(
+    #                                           style = list("font-weight" = "normal", padding = "3px 8px", "text-size" = "15px"),
+    #                                           textsize = "15px",
+    #                                           direction = "auto"))  %>%
+    #     addLegend(position = "bottomright",
+    #               colors = c(
+    #                 #"rgb(255, 255, 255,.15)", 
+    #                          #"#4c92d8", 
+    #                          # "rgb(128, 193, 185,.15)", 
+    #                          # "rgb(76, 144, 215,.15)",
+    #                          # "rgb(244, 158, 74,.15)",
+    #                          # "rgb(243, 167, 167,.15)", 
+    #                          # "rgb(233, 81, 82,.15)", 
+    #                          "rgb(194, 203, 49)",
+    #                          # "rgb(128, 193, 185)",
+    #                          # "rgb(76, 144, 215)",
+    #                          "rgb(244, 158, 74)"
+    #                          # "rgb(243, 167, 167)",
+    #                          # "rgb(233, 81, 82)"
+    #               ),
+    #               labels = legend.country.type,
+    #               values = developingcountries@data$NAPs.by.country.type,
+    #               title = "NAPs by Country Type")
+    #   
+  output$NAPmaplayer <- renderLeaflet({
+    leaflet(countries) %>%
+      setView(0, 1, 2.5) %>%
+      addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+      addEsriTiledMapLayer(
+        url = "https://geoservices.un.org/arcgis/rest/services/ClearMap_WebPlain/MapServer") %>%
+      addPolygons(fillColor = countries@data$color.code,
+                  weight = 1.3,
+                  opacity = 1,
+                  color = "white",
+                  dashArray = "3",
+                  fillOpacity = 0.8,
+      highlightOptions = highlightOptions(
+        weight = 3,
+        color = "white",
+        dashArray = "",
+        fillOpacity = 1,
+        bringToFront = TRUE),
+      popup = labels.countries,
+      popupOptions = popupOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px", "text-size" = "15px"),
+        textsize = "15px",
+        direction = "auto"))  %>%
+      addLegend(position = "bottomright",
+                colors = c(
+                  "rgb(194, 203, 49)",
+
+                  "rgb(244, 158, 74)"
+
+                ),
+                labels = legend.country.type,
+                values = developingcountries@data$NAPs.by.country.type,
+                title = "NAPs by Country Type")
+    
     })
     
     output$NAPtibble <- renderDataTable(
